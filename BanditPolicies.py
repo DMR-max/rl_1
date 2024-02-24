@@ -38,17 +38,25 @@ class OIPolicy:
 
     def __init__(self, n_actions=10, initial_value=0.0, learning_rate=0.1):
         self.n_actions = n_actions
-        # TO DO: Add own code
-        pass
+        self.est_action_val = np.full(n_actions, initial_value)
+        self.learning_rate = learning_rate
         
     def select_action(self):
         # TO DO: Add own code
-        a = np.random.randint(0,self.n_actions) # Replace this with correct action selection
+        #a = np.random.randint(0,self.n_actions) # Replace this with correct action selection
+        # print("est_list: ", self.est_action_val)
+        a = np.argmax(self.est_action_val)
         return a
         
     def update(self,a,r):
-        # TO DO: Add own code
-        pass
+        # print("r: ", r)
+        value = r - self.est_action_val[a]
+        # print("r-old: ", value)
+        # print("old_value: ", self.est_action_val[a])
+        self.est_action_val[a] = self.est_action_val[a] + (self.learning_rate * value)
+        # print("new_value: ", self.est_action_val[a])
+        # print('est list')
+        # print(self.est_action_val)
 
 class UCBPolicy:
 
