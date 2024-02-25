@@ -52,6 +52,8 @@ class OIPolicy:
         self.n_actions = n_actions
         self.est_action_val = np.full(n_actions, initial_value)
         self.learning_rate = learning_rate
+        self.est_action_val = np.full(n_actions, initial_value)
+        self.learning_rate = learning_rate
         
     def select_action(self):
 
