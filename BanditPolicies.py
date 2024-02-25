@@ -14,56 +14,82 @@ class EgreedyPolicy:
 
     def __init__(self, n_actions=10):
         self.n_actions = n_actions
+        self.action_tried = np.zeros(n_actions)
         self.action_val = np.zeros(n_actions)
-        # TO DO: Add own code
-        pass
+        self.action_mean = np.zeros(n_actions)
         
     def select_action(self, epsilon):
-        random_float = np.random.uniform(0,1) 
-        if random_float < epsilon:
-            # kies een random actie
-            a = np.random.randint(0,self.n_actions) # Replace this with correct action selection
+        random_float = np.random.random()
+        if random_float < (1 - epsilon):
+            
+            a = np.argmax(self.action_val)
+
         else:
             # kies argmax van de lijst met actie waarden
-            a = np.argmax(self.action_val)
-        
+            # kies een random actie 
+            # haal beste actie eruit
+            b = np.argmax(self.action_val)
+            probability = []
+            for i in range(self.n_actions):
+                probability.append(i)
+                
+            probability.remove(b)
+            a = int(np.random.choice(probability,size = 1))
+
         return a
         
     def update(self,a,r):
-        value = (r-self.action_val[a]) / (self.n_actions + 1)
-        self.action_val[a] += value
-        pass
+        self.action_tried[a] += 1
+        
+        value = (r - self.action_val[a])
+        value2 = self.action_tried[a]
+        self.action_val[a] += (value / value2)
+
 
 class OIPolicy:
 
     def __init__(self, n_actions=10, initial_value=0.0, learning_rate=0.1):
         self.n_actions = n_actions
-        # TO DO: Add own code
-        pass
+        self.est_action_val = np.full(n_actions, initial_value)
+        self.learning_rate = learning_rate
         
     def select_action(self):
-        # TO DO: Add own code
-        a = np.random.randint(0,self.n_actions) # Replace this with correct action selection
+
+        a = np.argmax(self.est_action_val)
         return a
         
     def update(self,a,r):
-        # TO DO: Add own code
-        pass
+        
+        value = r - self.est_action_val[a]
+
+        self.est_action_val[a] = self.est_action_val[a] + (self.learning_rate * value)
+
 
 class UCBPolicy:
 
     def __init__(self, n_actions=10):
         self.n_actions = n_actions
-        # TO DO: Add own code
+        self.action_tried = np.zeros(n_actions)
+        self.action_val = np.zeros(n_actions)
         pass
     
     def select_action(self, c, t):
-        # TO DO: Add own code
-        a = np.random.randint(0,self.n_actions) # Replace this with correct action selection
+        action_val_with_upperconf = np.zeros(self.n_actions)
+        for i in range(self.n_actions):
+            if self.action_tried[i] == 0:
+                action_val_with_upperconf[i] = float('inf')
+            else:
+                action_val_with_upperconf[i] = self.action_val[i] + c * (np.sqrt(np.log(t) / (self.action_tried[i])))
+        a = np.argmax(action_val_with_upperconf)
         return a
         
     def update(self,a,r):
-        # TO DO: Add own code
+        self.action_tried[a] += 1
+        
+        value = (r - self.action_val[a])
+        value2 = self.action_tried[a]
+
+        self.action_val[a] += (value / value2)
         pass
     
 def test():
